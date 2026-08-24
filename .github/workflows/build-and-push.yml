@@ -20,7 +20,7 @@ on:
 
 jobs:
   build-and-push:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     permissions:
       contents: read
       packages: write
@@ -31,8 +31,14 @@ jobs:
 
       - name: Install System Dependencies
         run: |
-          sudo apt-get update
-          sudo apt-get install -y dnf rpm p7zip-full libarchive-tools curl tar gzip
+          if command -v apt-get &>/dev/null; then
+            sudo apt-get update -qq || true
+            sudo apt-get install -y -qq dnf rpm p7zip-full libarchive-tools curl tar gzip || true
+          elif command -v dnf &>/dev/null; then
+            sudo dnf install -y -q dnf rpm p7zip curl tar gzip || true
+          elif command -v yum &>/dev/null; then
+            sudo yum install -y -q dnf rpm p7zip curl tar gzip || true
+          fi
 
       - name: Login to Docker Hub
         if: env.DOCKER_PASSWORD != ''
