@@ -177,11 +177,19 @@ for target in "${TARGETS[@]}"; do
   ROOTFS_DIR="/tmp/redos_rootfs_${RAND_ID}"
 
   cleanup_run() {
-    log_info "Cleaning up temporary mount points and directories..."
-    sudo s umount "$MNT_DIR" 2>/dev/null || s umount "$MNT_DIR" 2>/dev/null || true
-    sudo s rm -rf "$MNT_DIR" "$ROOTFS_DIR"
+    log_info "Cleaning up temporary mount points and rootfs directory..."
+    s umount "$MNT_DIR" 2>/dev/null || true
+    s rm -rf "$MNT_DIR" "$ROOTFS_DIR"
     if [[ "$source" =~ ^https?:// ]] && [ -f "${LOCAL_ISO:-}" ]; then
+      log_info "Removing downloaded temporary ISO: $LOCAL_ISO"
       rm -f "$LOCAL_ISO"
+    fi
+    if [ "${CLEANUP_DOCKER_IMAGES:-true}" = "true" ]; then
+      log_info "Pruning local Docker images for this tag to free disk space..."
+      docker rmi -f "${FULL_IMAGE_TAG}" "${FULL_GHCR_TAG}" 2>/dev/null || true
+      for extra_tag in "${ALL_EXTRA_TAGS[@]:-}"; do
+        docker rmi -f "${IMAGE_NAME}:${extra_tag}-${PRESET_CHOICE}" "${GHCR_IMAGE_NAME}:${extra_tag}-${PRESET_CHOICE}" 2>/dev/null || true
+      done
     fi
   }
   trap cleanup_run EXIT
