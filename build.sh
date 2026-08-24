@@ -34,6 +34,15 @@ C_CYAN="\033[1;36m"
 C_MAGENTA="\033[1;35m"
 C_GRAY="\033[0;90m"
 
+# Sudo helper for commands requiring root
+s() {
+  if [ "$(id -u)" -ne 0 ] && command -v sudo &>/dev/null; then
+    sudo "$@"
+  else
+    "$@"
+  fi
+}
+
 ts() { date "+%Y-%m-%d %H:%M:%S"; }
 log_info() { echo -e "${C_CYAN}[$(ts)]${C_RESET} ${C_BLUE}[INFO]${C_RESET} $1"; }
 log_step() { echo -e "\n${C_CYAN}[$(ts)]${C_RESET} ${C_MAGENTA}${C_BOLD}===> $1${C_RESET}"; }
@@ -169,8 +178,8 @@ for target in "${TARGETS[@]}"; do
 
   cleanup_run() {
     log_info "Cleaning up temporary mount points and directories..."
-    sudo umount "$MNT_DIR" 2>/dev/null || umount "$MNT_DIR" 2>/dev/null || true
-    sudo rm -rf "$MNT_DIR" "$ROOTFS_DIR"
+    sudo s umount "$MNT_DIR" 2>/dev/null || s umount "$MNT_DIR" 2>/dev/null || true
+    sudo s rm -rf "$MNT_DIR" "$ROOTFS_DIR"
     if [[ "$source" =~ ^https?:// ]] && [ -f "${LOCAL_ISO:-}" ]; then
       rm -f "$LOCAL_ISO"
     fi
@@ -227,7 +236,7 @@ for target in "${TARGETS[@]}"; do
 
   log_step "Installing package group '${TARGET_GROUP}' via dnf --installroot"
   log_exec "dnf --installroot=$ROOTFS_DIR --nogpgcheck --disablerepo=* --repofrompath=iso,$MNT_DIR --releasever=${ACTUAL_MAJOR} group install ${TARGET_GROUP}"
-  if ! dnf --installroot="$ROOTFS_DIR" \
+  if ! s dnf --installroot="$ROOTFS_DIR" \
       --nogpgcheck \
       --disablerepo='*' \
       --repofrompath=iso,"$MNT_DIR" \
@@ -238,7 +247,7 @@ for target in "${TARGETS[@]}"; do
       
       log_warn "Group install '${TARGET_GROUP}' failed, falling back to @core @standard..."
       log_exec "dnf --installroot=$ROOTFS_DIR ... install @core @standard redos-release"
-      dnf --installroot="$ROOTFS_DIR" \
+      s dnf --installroot="$ROOTFS_DIR" \
           --nogpgcheck \
           --disablerepo='*' \
           --repofrompath=iso,"$MNT_DIR" \
@@ -250,7 +259,7 @@ for target in "${TARGETS[@]}"; do
 
   log_step "Deep optimization of rootfs for Docker container"
   log_exec "Removing unneeded kernel, firmware, and desktop packages from RPM DB..."
-  rpm --root "$ROOTFS_DIR" -e --nodeps \
+  s rpm --root "$ROOTFS_DIR" -e --nodeps \
     kernel-lt kernel \
     linux-firmware atheros-firmware amd-gpu-firmware nvidia-gpu-firmware \
     mt7xxx-firmware intel-gpu-firmware brcmfmac-firmware realtek-firmware \
@@ -259,12 +268,12 @@ for target in "${TARGETS[@]}"; do
     grub2-tools grub2-redos-theme grub2-common grubby 2>/dev/null || true
 
   log_exec "Purging /lib/modules, /lib/firmware, /usr/lib64/dri, /boot..."
-  rm -rf "$ROOTFS_DIR"/lib/modules/* "$ROOTFS_DIR"/usr/lib/modules/* "$ROOTFS_DIR"/boot/* 2>/dev/null || true
-  rm -rf "$ROOTFS_DIR"/lib/firmware/* "$ROOTFS_DIR"/usr/lib/firmware/* "$ROOTFS_DIR"/usr/lib64/dri/* "$ROOTFS_DIR"/usr/lib/dri/* 2>/dev/null || true
+  s rm -rf "$ROOTFS_DIR"/lib/modules/* "$ROOTFS_DIR"/usr/lib/modules/* "$ROOTFS_DIR"/boot/* 2>/dev/null || true
+  s rm -rf "$ROOTFS_DIR"/lib/firmware/* "$ROOTFS_DIR"/usr/lib/firmware/* "$ROOTFS_DIR"/usr/lib64/dri/* "$ROOTFS_DIR"/usr/lib/dri/* 2>/dev/null || true
 
   log_exec "Purging documentation, man pages, caches, licenses, and temporary files..."
-  rm -rf "$ROOTFS_DIR"/var/cache/dnf/* "$ROOTFS_DIR"/var/cache/yum/* "$ROOTFS_DIR"/var/log/* "$ROOTFS_DIR"/tmp/* 2>/dev/null || true
-  rm -rf "$ROOTFS_DIR"/usr/share/doc/* "$ROOTFS_DIR"/usr/share/man/* "$ROOTFS_DIR"/usr/share/info/* "$ROOTFS_DIR"/usr/share/licenses/* 2>/dev/null || true
+  s rm -rf "$ROOTFS_DIR"/var/cache/dnf/* "$ROOTFS_DIR"/var/cache/yum/* "$ROOTFS_DIR"/var/log/* "$ROOTFS_DIR"/tmp/* 2>/dev/null || true
+  s rm -rf "$ROOTFS_DIR"/usr/share/doc/* "$ROOTFS_DIR"/usr/share/man/* "$ROOTFS_DIR"/usr/share/info/* "$ROOTFS_DIR"/usr/share/licenses/* 2>/dev/null || true
 
   log_exec "Stripping non-English locales (preserving en* and POSIX)..."
   if [ -d "$ROOTFS_DIR/usr/share/locale" ]; then
@@ -272,24 +281,24 @@ for target in "${TARGETS[@]}"; do
   fi
 
   log_exec "Purging Python test suites, cracklib wordlists, and hwdb.bin..."
-  rm -rf "$ROOTFS_DIR"/usr/lib64/python3*/test "$ROOTFS_DIR"/usr/lib/python3*/test "$ROOTFS_DIR"/usr/lib64/guile 2>/dev/null || true
-  rm -f "$ROOTFS_DIR"/etc/udev/hwdb.bin "$ROOTFS_DIR"/usr/share/cracklib/cracklib-small.pwd 2>/dev/null || true
+  s rm -rf "$ROOTFS_DIR"/usr/lib64/python3*/test "$ROOTFS_DIR"/usr/lib/python3*/test "$ROOTFS_DIR"/usr/lib64/guile 2>/dev/null || true
+  s rm -f "$ROOTFS_DIR"/etc/udev/hwdb.bin "$ROOTFS_DIR"/usr/share/cracklib/cracklib-small.pwd 2>/dev/null || true
 
   log_info "Configuring systemd units for container compatibility..."
-  rm -f "$ROOTFS_DIR"/lib/systemd/system/multi-user.target.wants/* 2>/dev/null || true
-  rm -f "$ROOTFS_DIR"/etc/systemd/system/*.wants/* 2>/dev/null || true
-  rm -f "$ROOTFS_DIR"/lib/systemd/system/local-fs.target.wants/* 2>/dev/null || true
-  rm -f "$ROOTFS_DIR"/lib/systemd/system/sockets.target.wants/*udev* 2>/dev/null || true
-  rm -f "$ROOTFS_DIR"/lib/systemd/system/sockets.target.wants/*initctl* 2>/dev/null || true
-  rm -f "$ROOTFS_DIR"/lib/systemd/system/basic.target.wants/* 2>/dev/null || true
-  rm -f "$ROOTFS_DIR"/lib/systemd/system/anaconda.target.wants/* 2>/dev/null || true
+  s rm -f "$ROOTFS_DIR"/lib/systemd/system/multi-user.target.wants/* 2>/dev/null || true
+  s rm -f "$ROOTFS_DIR"/etc/systemd/system/*.wants/* 2>/dev/null || true
+  s rm -f "$ROOTFS_DIR"/lib/systemd/system/local-fs.target.wants/* 2>/dev/null || true
+  s rm -f "$ROOTFS_DIR"/lib/systemd/system/sockets.target.wants/*udev* 2>/dev/null || true
+  s rm -f "$ROOTFS_DIR"/lib/systemd/system/sockets.target.wants/*initctl* 2>/dev/null || true
+  s rm -f "$ROOTFS_DIR"/lib/systemd/system/basic.target.wants/* 2>/dev/null || true
+  s rm -f "$ROOTFS_DIR"/lib/systemd/system/anaconda.target.wants/* 2>/dev/null || true
   if [[ -d "$ROOTFS_DIR/lib/systemd/system/sysinit.target.wants" ]]; then
     (cd "$ROOTFS_DIR/lib/systemd/system/sysinit.target.wants" && for f in *; do [[ "$f" != "systemd-tmpfiles-setup.service" ]] && rm -f "$f"; done) 2>/dev/null || true
   fi
 
   # Optional: Uncomment if DinD (Docker-in-Docker) preconfiguration is needed directly in base image
   # log_info "Configuring containerd and Docker for DinD (Docker-in-Docker) support..."
-  # mkdir -p "$ROOTFS_DIR"/etc/systemd/system/containerd.service.d "$ROOTFS_DIR"/etc/docker
+  # s mkdir -p "$ROOTFS_DIR"/etc/systemd/system/containerd.service.d "$ROOTFS_DIR"/etc/docker
   # cat << 'EOF_DIND' > "$ROOTFS_DIR"/etc/systemd/system/containerd.service.d/override.conf
   # [Service]
   # ExecStartPre=
@@ -303,17 +312,17 @@ for target in "${TARGETS[@]}"; do
 
   log_info "Migrating RPM database to SQLite backend and importing distribution GPG keys..."
   log_exec "rpm --root $ROOTFS_DIR --rebuilddb && rpm --import GPG-KEYS"
-  rm -rf "$ROOTFS_DIR"/usr/lib/sysimage/rpm "$ROOTFS_DIR"/var/lib/rpm/.migratedb "$ROOTFS_DIR"/var/lib/rpmrebuilddb.* "$ROOTFS_DIR"/usr/lib/sysimage/rpmrebuilddb.* 2>/dev/null || true
-  mkdir -p "$ROOTFS_DIR"/usr/lib/sysimage/rpm
-  mv "$ROOTFS_DIR"/var/lib/rpm/* "$ROOTFS_DIR"/usr/lib/sysimage/rpm/ 2>/dev/null || true
-  rm -rf "$ROOTFS_DIR"/var/lib/rpm
-  ln -sf /usr/lib/sysimage/rpm "$ROOTFS_DIR"/var/lib/rpm
-  rpm --root "$ROOTFS_DIR" --rebuilddb 2>/dev/null || true
-  rpm --root "$ROOTFS_DIR" --import "$ROOTFS_DIR"/etc/pki/rpm-gpg/RPM-GPG-KEY* 2>/dev/null || true
+  s rm -rf "$ROOTFS_DIR"/usr/lib/sysimage/rpm "$ROOTFS_DIR"/var/lib/rpm/.migratedb "$ROOTFS_DIR"/var/lib/rpmrebuilddb.* "$ROOTFS_DIR"/usr/lib/sysimage/rpmrebuilddb.* 2>/dev/null || true
+  s mkdir -p "$ROOTFS_DIR"/usr/lib/sysimage/rpm
+  s mv "$ROOTFS_DIR"/var/lib/rpm/* "$ROOTFS_DIR"/usr/lib/sysimage/rpm/ 2>/dev/null || true
+  s rm -rf "$ROOTFS_DIR"/var/lib/rpm
+  s ln -sf /usr/lib/sysimage/rpm "$ROOTFS_DIR"/var/lib/rpm
+  s rpm --root "$ROOTFS_DIR" --rebuilddb 2>/dev/null || true
+  s rpm --root "$ROOTFS_DIR" --import "$ROOTFS_DIR"/etc/pki/rpm-gpg/RPM-GPG-KEY* 2>/dev/null || true
 
   log_step "Importing rootfs into Docker -> ${FULL_IMAGE_TAG}"
   log_exec "tar -C $ROOTFS_DIR -c . | docker import -c 'ENV container=docker' -c 'ENV LANG=en_US.UTF-8' -c 'STOPSIGNAL SIGRTMIN+3' -c 'CMD [\"/sbin/init\"]' - ${FULL_IMAGE_TAG}"
-  tar -C "$ROOTFS_DIR" -c . | docker import \
+  s tar -C "$ROOTFS_DIR" -c . | docker import \
     -c "ENV container=docker" \
     -c "ENV LANG=en_US.UTF-8" \
     -c "ENV LC_ALL=en_US.UTF-8" \
@@ -328,7 +337,7 @@ for target in "${TARGETS[@]}"; do
 ')
   fi
   if [ -z "$INTERNAL_VERSION" ]; then
-    INTERNAL_VERSION=$(rpm --root "$ROOTFS_DIR" -q --queryformat '%{VERSION}' redos-release 2>/dev/null || true)
+    INTERNAL_VERSION=$(s rpm --root "$ROOTFS_DIR" -q --queryformat '%{VERSION}' redos-release 2>/dev/null || true)
   fi
   if [ -z "$INTERNAL_VERSION" ]; then
     INTERNAL_VERSION="$DETECTED_RELEASE"

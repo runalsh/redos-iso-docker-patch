@@ -56,11 +56,6 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Synchronize Docker Credentials for Root
-        run: |
-          sudo mkdir -p /root/.docker
-          sudo cp -f "$HOME/.docker/config.json" /root/.docker/config.json 2>/dev/null || true
-
       - name: Build and Push Images
         env:
           PUSH_TO_DOCKERHUB: ${{ secrets.DOCKER_PASSWORD != '' }}
@@ -68,4 +63,4 @@ jobs:
           SKIP_EXISTS_CHECK: ${{ github.event.inputs.force_rebuild || false }}
         run: |
           PRESET="${{ github.event.inputs.preset || 'minimal' }}"
-          sudo -E ./build.sh --preset "$PRESET"
+          ./build.sh --preset "$PRESET"
