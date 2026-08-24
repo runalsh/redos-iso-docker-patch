@@ -230,9 +230,19 @@ for target in "${TARGETS[@]}"; do
   if command -v 7z &>/dev/null; then
     log_exec "7z x -y -bso0 -bsp0 -o$MNT_DIR $LOCAL_ISO"
     7z x -y -bso0 -bsp0 -o"$MNT_DIR" "$LOCAL_ISO"
+    if [[ "$source" =~ ^https?:// ]] && [ -f "${LOCAL_ISO:-}" ]; then
+      log_info "Immediately removing downloaded ISO ($LOCAL_ISO) to free 5.4 GB of disk space..."
+      rm -f "$LOCAL_ISO"
+      LOCAL_ISO=""
+    fi
   elif command -v bsdtar &>/dev/null; then
     log_exec "bsdtar -xf $LOCAL_ISO -C $MNT_DIR"
     bsdtar -xf "$LOCAL_ISO" -C "$MNT_DIR"
+    if [[ "$source" =~ ^https?:// ]] && [ -f "${LOCAL_ISO:-}" ]; then
+      log_info "Immediately removing downloaded ISO ($LOCAL_ISO) to free 5.4 GB of disk space..."
+      rm -f "$LOCAL_ISO"
+      LOCAL_ISO=""
+    fi
   else
     log_exec "sudo mount -o loop,ro $LOCAL_ISO $MNT_DIR || mount -o loop,ro $LOCAL_ISO $MNT_DIR"
     sudo mount -o loop,ro "$LOCAL_ISO" "$MNT_DIR" 2>/dev/null || mount -o loop,ro "$LOCAL_ISO" "$MNT_DIR"
