@@ -169,8 +169,8 @@ for target in "${TARGETS[@]}"; do
 
   cleanup_run() {
     log_info "Cleaning up temporary mount points and directories..."
-    umount "$MNT_DIR" 2>/dev/null || true
-    rm -rf "$MNT_DIR" "$ROOTFS_DIR"
+    sudo umount "$MNT_DIR" 2>/dev/null || umount "$MNT_DIR" 2>/dev/null || true
+    sudo rm -rf "$MNT_DIR" "$ROOTFS_DIR"
     if [[ "$source" =~ ^https?:// ]] && [ -f "${LOCAL_ISO:-}" ]; then
       rm -f "$LOCAL_ISO"
     fi
@@ -198,8 +198,17 @@ for target in "${TARGETS[@]}"; do
     LOCAL_ISO="$source"
   fi
 
-  log_exec "mount -o loop,ro $LOCAL_ISO $MNT_DIR"
-  mount -o loop,ro "$LOCAL_ISO" "$MNT_DIR"
+  log_info "Preparing ISO contents in $MNT_DIR..."
+  if command -v 7z &>/dev/null; then
+    log_exec "7z x -y -bso0 -bsp0 -o$MNT_DIR $LOCAL_ISO"
+    7z x -y -bso0 -bsp0 -o"$MNT_DIR" "$LOCAL_ISO"
+  elif command -v bsdtar &>/dev/null; then
+    log_exec "bsdtar -xf $LOCAL_ISO -C $MNT_DIR"
+    bsdtar -xf "$LOCAL_ISO" -C "$MNT_DIR"
+  else
+    log_exec "sudo mount -o loop,ro $LOCAL_ISO $MNT_DIR || mount -o loop,ro $LOCAL_ISO $MNT_DIR"
+    sudo mount -o loop,ro "$LOCAL_ISO" "$MNT_DIR" 2>/dev/null || mount -o loop,ro "$LOCAL_ISO" "$MNT_DIR"
+  fi
 
   DETECTED_RELEASE=""
   if [ -f "$MNT_DIR/.treeinfo" ]; then

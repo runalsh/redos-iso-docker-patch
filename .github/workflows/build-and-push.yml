@@ -32,7 +32,7 @@ jobs:
       - name: Install System Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y dnf rpm curl tar gzip
+          sudo apt-get install -y dnf rpm p7zip-full libarchive-tools curl tar gzip
 
       - name: Login to Docker Hub
         if: env.DOCKER_PASSWORD != ''
@@ -57,4 +57,4 @@ jobs:
           SKIP_EXISTS_CHECK: ${{ github.event.inputs.force_rebuild || false }}
         run: |
           PRESET="${{ github.event.inputs.preset || 'minimal' }}"
-          ./build.sh --preset "$PRESET"
+          sudo -E ./build.sh --preset "$PRESET"
