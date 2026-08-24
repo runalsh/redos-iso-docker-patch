@@ -2,7 +2,7 @@
 
 [![Build and Push RED OS Docker Images](https://github.com/runalsh/redos-patch/actions/workflows/build.yml/badge.svg)](https://github.com/runalsh/redos-patch/actions/workflows/build.yml)
 
-Automated toolchain and CI pipelines that build clean, production-ready Docker container images directly from official **RED OS 7.3 and 8.0 Everything DVD ISO** releases into **`runalsh/redos-patch`** (Docker Hub) and **`ghcr.io/runalsh/redos-patch`** (GitHub Packages).
+Automated Docker images for exact RED OS releases (**7.3.0**–**7.3.7**, **8.0.0**–**8.0.3**) with systemd support, built directly from official Everything DVD ISOs into **`runalsh/redos-patch`** and **`ghcr.io/runalsh/redos-patch`**.
 
 ---
 
