@@ -19,29 +19,31 @@ This project builds full-featured Docker images directly from official Everythin
 
 ## 📦 Available Images and Registries
 
-### RED OS 8.0
+### RED OS 8.0 (Minimal Preset Example)
 
-| Tag | Semantic Patch Version | Docker Hub Image Link | GHCR Package Link |
+| Tag | Semantic Version | Docker Hub Image Link | GHCR Package Link |
 |---|---|---|---|
-| `8` | RED OS 8.0 (Latest Major) | [`runalsh/redos-patch:8`](https://hub.docker.com/r/runalsh/redos-patch/tags) | [`ghcr.io/runalsh/redos-patch:8`](https://github.com/users/runalsh/packages/container/package/redos-patch) |
-| `8.0.3` | RED OS 8.0.3 | [`runalsh/redos-patch:8.0.3`](https://hub.docker.com/r/runalsh/redos-patch/tags) | [`ghcr.io/runalsh/redos-patch:8.0.3`](https://github.com/users/runalsh/packages/container/package/redos-patch) |
-| `8.0.2` | RED OS 8.0.2 | [`runalsh/redos-patch:8.0.2`](https://hub.docker.com/r/runalsh/redos-patch/tags) | [`ghcr.io/runalsh/redos-patch:8.0.2`](https://github.com/users/runalsh/packages/container/package/redos-patch) |
-| `8.0.1` | RED OS 8.0.1 | [`runalsh/redos-patch:8.0.1`](https://hub.docker.com/r/runalsh/redos-patch/tags) | [`ghcr.io/runalsh/redos-patch:8.0.1`](https://github.com/users/runalsh/packages/container/package/redos-patch) |
-| `8.0.0` | RED OS 8.0.0 | [`runalsh/redos-patch:8.0.0`](https://hub.docker.com/r/runalsh/redos-patch/tags) | [`ghcr.io/runalsh/redos-patch:8.0.0`](https://github.com/users/runalsh/packages/container/package/redos-patch) |
+| `8-minimal` | RED OS 8.0 (Latest Major) | [`runalsh/redos-patch:8-minimal`](https://hub.docker.com/r/runalsh/redos-patch/tags) | [`ghcr.io/runalsh/redos-patch:8-minimal`](https://github.com/users/runalsh/packages/container/package/redos-patch) |
+| `8.0-minimal` | RED OS 8.0 (Minor) | [`runalsh/redos-patch:8.0-minimal`](https://hub.docker.com/r/runalsh/redos-patch/tags) | [`ghcr.io/runalsh/redos-patch:8.0-minimal`](https://github.com/users/runalsh/packages/container/package/redos-patch) |
+| `8.0.3-minimal` | RED OS 8.0.3 (Patch) | [`runalsh/redos-patch:8.0.3-minimal`](https://hub.docker.com/r/runalsh/redos-patch/tags) | [`ghcr.io/runalsh/redos-patch:8.0.3-minimal`](https://github.com/users/runalsh/packages/container/package/redos-patch) |
+| `8.0.2-minimal` | RED OS 8.0.2 (Patch) | [`runalsh/redos-patch:8.0.2-minimal`](https://hub.docker.com/r/runalsh/redos-patch/tags) | [`ghcr.io/runalsh/redos-patch:8.0.2-minimal`](https://github.com/users/runalsh/packages/container/package/redos-patch) |
+| `8.0.1-minimal` | RED OS 8.0.1 (Patch) | [`runalsh/redos-patch:8.0.1-minimal`](https://hub.docker.com/r/runalsh/redos-patch/tags) | [`ghcr.io/runalsh/redos-patch:8.0.1-minimal`](https://github.com/users/runalsh/packages/container/package/redos-patch) |
+| `8.0.0-minimal` | RED OS 8.0.0 (Patch) | [`runalsh/redos-patch:8.0.0-minimal`](https://hub.docker.com/r/runalsh/redos-patch/tags) | [`ghcr.io/runalsh/redos-patch:8.0.0-minimal`](https://github.com/users/runalsh/packages/container/package/redos-patch) |
 
-### RED OS 7.3
+### RED OS 7.3 (Minimal Preset Example)
 
-| Tag | Semantic Patch Version | Docker Hub Image Link | GHCR Package Link |
+| Tag | Semantic Version | Docker Hub Image Link | GHCR Package Link |
 |---|---|---|---|
-| `7` | Latest RED OS 7.3 Minimal | [`runalsh/redos-patch:7`](https://hub.docker.com/r/runalsh/redos-patch/tags) | [`ghcr.io/runalsh/redos-patch:7`](https://github.com/users/runalsh/packages/container/package/redos-patch) |
-| `7.3.7` | RED OS 7.3.7 | [`runalsh/redos-patch:7.3.7`](https://hub.docker.com/r/runalsh/redos-patch/tags) | [`ghcr.io/runalsh/redos-patch:7.3.7`](https://github.com/users/runalsh/packages/container/package/redos-patch) |
-| `7.3.6` | RED OS 7.3.6 | [`runalsh/redos-patch:7.3.6`](https://hub.docker.com/r/runalsh/redos-patch/tags) | [`ghcr.io/runalsh/redos-patch:7.3.6`](https://github.com/users/runalsh/packages/container/package/redos-patch) |
-| `7.3.5` | RED OS 7.3.5 | [`runalsh/redos-patch:7.3.5`](https://hub.docker.com/r/runalsh/redos-patch/tags) | [`ghcr.io/runalsh/redos-patch:7.3.5`](https://github.com/users/runalsh/packages/container/package/redos-patch) |
-| `7.3.4` | RED OS 7.3.4 | [`runalsh/redos-patch:7.3.4`](https://hub.docker.com/r/runalsh/redos-patch/tags) | [`ghcr.io/runalsh/redos-patch:7.3.4`](https://github.com/users/runalsh/packages/container/package/redos-patch) |
-| `7.3.3` | RED OS 7.3.3 | [`runalsh/redos-patch:7.3.3`](https://hub.docker.com/r/runalsh/redos-patch/tags) | [`ghcr.io/runalsh/redos-patch:7.3.3`](https://github.com/users/runalsh/packages/container/package/redos-patch) |
-| `7.3.2` | RED OS 7.3.2 | [`runalsh/redos-patch:7.3.2`](https://hub.docker.com/r/runalsh/redos-patch/tags) | [`ghcr.io/runalsh/redos-patch:7.3.2`](https://github.com/users/runalsh/packages/container/package/redos-patch) |
-| `7.3.1` | RED OS 7.3.1 | [`runalsh/redos-patch:7.3.1`](https://hub.docker.com/r/runalsh/redos-patch/tags) | [`ghcr.io/runalsh/redos-patch:7.3.1`](https://github.com/users/runalsh/packages/container/package/redos-patch) |
-| `7.3.0` | RED OS 7.3.0 | [`runalsh/redos-patch:7.3.0`](https://hub.docker.com/r/runalsh/redos-patch/tags) | [`ghcr.io/runalsh/redos-patch:7.3.0`](https://github.com/users/runalsh/packages/container/package/redos-patch) |
+| `7-minimal` | RED OS 7.3 (Latest Major) | [`runalsh/redos-patch:7-minimal`](https://hub.docker.com/r/runalsh/redos-patch/tags) | [`ghcr.io/runalsh/redos-patch:7-minimal`](https://github.com/users/runalsh/packages/container/package/redos-patch) |
+| `7.3-minimal` | RED OS 7.3 (Minor) | [`runalsh/redos-patch:7.3-minimal`](https://hub.docker.com/r/runalsh/redos-patch/tags) | [`ghcr.io/runalsh/redos-patch:7.3-minimal`](https://github.com/users/runalsh/packages/container/package/redos-patch) |
+| `7.3.7-minimal` | RED OS 7.3.7 (Patch) | [`runalsh/redos-patch:7.3.7-minimal`](https://hub.docker.com/r/runalsh/redos-patch/tags) | [`ghcr.io/runalsh/redos-patch:7.3.7-minimal`](https://github.com/users/runalsh/packages/container/package/redos-patch) |
+| `7.3.6-minimal` | RED OS 7.3.6 (Patch) | [`runalsh/redos-patch:7.3.6-minimal`](https://hub.docker.com/r/runalsh/redos-patch/tags) | [`ghcr.io/runalsh/redos-patch:7.3.6-minimal`](https://github.com/users/runalsh/packages/container/package/redos-patch) |
+| `7.3.5-minimal` | RED OS 7.3.5 (Patch) | [`runalsh/redos-patch:7.3.5-minimal`](https://hub.docker.com/r/runalsh/redos-patch/tags) | [`ghcr.io/runalsh/redos-patch:7.3.5-minimal`](https://github.com/users/runalsh/packages/container/package/redos-patch) |
+| `7.3.4-minimal` | RED OS 7.3.4 (Patch) | [`runalsh/redos-patch:7.3.4-minimal`](https://hub.docker.com/r/runalsh/redos-patch/tags) | [`ghcr.io/runalsh/redos-patch:7.3.4-minimal`](https://github.com/users/runalsh/packages/container/package/redos-patch) |
+| `7.3.3-minimal` | RED OS 7.3.3 (Patch) | [`runalsh/redos-patch:7.3.3-minimal`](https://hub.docker.com/r/runalsh/redos-patch/tags) | [`ghcr.io/runalsh/redos-patch:7.3.3-minimal`](https://github.com/users/runalsh/packages/container/package/redos-patch) |
+| `7.3.2-minimal` | RED OS 7.3.2 (Patch) | [`runalsh/redos-patch:7.3.2-minimal`](https://hub.docker.com/r/runalsh/redos-patch/tags) | [`ghcr.io/runalsh/redos-patch:7.3.2-minimal`](https://github.com/users/runalsh/packages/container/package/redos-patch) |
+| `7.3.1-minimal` | RED OS 7.3.1 (Patch) | [`runalsh/redos-patch:7.3.1-minimal`](https://hub.docker.com/r/runalsh/redos-patch/tags) | [`ghcr.io/runalsh/redos-patch:7.3.1-minimal`](https://github.com/users/runalsh/packages/container/package/redos-patch) |
+| `7.3.0-minimal` | RED OS 7.3.0 (Patch) | [`runalsh/redos-patch:7.3.0-minimal`](https://hub.docker.com/r/runalsh/redos-patch/tags) | [`ghcr.io/runalsh/redos-patch:7.3.0-minimal`](https://github.com/users/runalsh/packages/container/package/redos-patch) |
 
 ### Universal Presets Mapping
 
@@ -92,7 +94,7 @@ docker run -d --name redos \
   --privileged \
   --cgroupns=host \
   -v /sys/fs/cgroup:/sys/fs/cgroup:rw \
-  ghcr.io/runalsh/redos-patch:8
+  ghcr.io/runalsh/redos-patch:8-minimal
 ```
 
 ### 2. Connect into interactive shell:

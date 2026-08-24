@@ -134,12 +134,9 @@ for target in "${TARGETS[@]}"; do
 
   MAJOR_VER=$(echo "$tag" | grep -oE '^[0-9]+' || echo "8")
   
-  FULL_IMAGE_TAG="${IMAGE_NAME}:${tag}"
-  [ "$PRESET_CHOICE" != "minimal" ] && FULL_IMAGE_TAG="${FULL_IMAGE_TAG}-${PRESET_CHOICE}"
-  
+  FULL_IMAGE_TAG="${IMAGE_NAME}:${tag}-${PRESET_CHOICE}"
   GHCR_IMAGE_NAME="ghcr.io/$(echo "${IMAGE_NAME}" | tr '[:upper:]' '[:lower:]')"
-  FULL_GHCR_TAG="${GHCR_IMAGE_NAME}:${tag}"
-  [ "$PRESET_CHOICE" != "minimal" ] && FULL_GHCR_TAG="${FULL_GHCR_TAG}-${PRESET_CHOICE}"
+  FULL_GHCR_TAG="${GHCR_IMAGE_NAME}:${tag}-${PRESET_CHOICE}"
 
   # Check if image already exists in remote registries
   if [ "$SKIP_EXISTS_CHECK" != "true" ]; then
@@ -351,8 +348,7 @@ for target in "${TARGETS[@]}"; do
   [ -n "$MAJOR_VER" ] && ALL_EXTRA_TAGS+=("$MAJOR_VER")
 
   for extra_tag in "${ALL_EXTRA_TAGS[@]}"; do
-    ext_t="$extra_tag"
-    [ "$PRESET_CHOICE" != "minimal" ] && ext_t="${extra_tag}-${PRESET_CHOICE}"
+    ext_t="${extra_tag}-${PRESET_CHOICE}"
     
     log_exec "docker tag ${FULL_IMAGE_TAG} ${IMAGE_NAME}:${ext_t}"
     docker tag "${FULL_IMAGE_TAG}" "${IMAGE_NAME}:${ext_t}"
@@ -374,16 +370,18 @@ for target in "${TARGETS[@]}"; do
     log_step "Pushing to Docker Hub: ${FULL_IMAGE_TAG}"
     log_exec "docker push ${FULL_IMAGE_TAG}"
     docker push "${FULL_IMAGE_TAG}"
-    docker push "${IMAGE_NAME}:${ACTUAL_MAJOR}"
-    # latest push omitted
+    for extra_tag in "${ALL_EXTRA_TAGS[@]}"; do
+      docker push "${IMAGE_NAME}:${extra_tag}-${PRESET_CHOICE}"
+    done
   fi
 
   if [ "$PUSH_TO_GHCR" = "true" ]; then
     log_step "Pushing to GHCR: ${FULL_GHCR_TAG}"
     log_exec "docker push ${FULL_GHCR_TAG}"
     docker push "${FULL_GHCR_TAG}"
-    docker push "${GHCR_IMAGE_NAME}:${ACTUAL_MAJOR}"
-    # latest push omitted
+    for extra_tag in "${ALL_EXTRA_TAGS[@]}"; do
+      docker push "${GHCR_IMAGE_NAME}:${extra_tag}-${PRESET_CHOICE}"
+    done
   fi
 
   SUCCESS_TAGS+=("${FULL_IMAGE_TAG}")
