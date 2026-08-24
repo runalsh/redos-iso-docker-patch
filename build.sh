@@ -190,9 +190,11 @@ for target in "${TARGETS[@]}"; do
       log_info "Found local cached ISO: $LOCAL_ISO (download skipped)"
     else
       LOCAL_ISO="/tmp/download_${RAND_ID}.iso"
-      log_info "Downloading ISO from ${source}..."
-      log_exec "curl -fLC - -o $LOCAL_ISO $source"
-      curl -fLC - --progress-bar -o "$LOCAL_ISO" "$source"
+      log_info "Downloading ISO from ${source} (silent in CI)..."
+      log_exec "curl -fLC - -sS --show-error -o $LOCAL_ISO $source"
+      curl -fLC - -sS --show-error -o "$LOCAL_ISO" "$source"
+      ISO_SIZE=$(du -h "$LOCAL_ISO" | awk '{print $1}')
+      log_success "Download complete. File size: ${ISO_SIZE}"
     fi
   else
     LOCAL_ISO="$source"
