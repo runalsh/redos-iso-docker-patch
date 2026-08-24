@@ -64,3 +64,9 @@ jobs:
         run: |
           PRESET="${{ github.event.inputs.preset || 'minimal' }}"
           ./build.sh --preset "$PRESET"
+
+      - name: Always Clean Up Leftover Mounts and Files
+        if: always()
+        run: |
+          sudo umount /tmp/iso_mnt_* 2>/dev/null || true
+          sudo rm -rf /tmp/iso_mnt_* /tmp/redos_rootfs_* /tmp/download_*.iso 2>/dev/null || true

@@ -133,6 +133,15 @@ echo -e "Push to Docker Hub:    ${PUSH_TO_DOCKERHUB}"
 echo -e "Push to GHCR:          ${PUSH_TO_GHCR}"
 echo -e "${C_BOLD}==============================================================================${C_RESET}"
 
+global_cleanup() {
+  log_info "Running pre-build cleanup of any leftover mounts and temporary files..."
+  for m in $(mount 2>/dev/null | grep -E '/tmp/iso_mnt_' | awk '{print $3}' || true); do
+    s umount "$m" 2>/dev/null || true
+  done
+  s rm -rf /tmp/iso_mnt_* /tmp/redos_rootfs_* /tmp/download_*.iso 2>/dev/null || true
+}
+global_cleanup
+
 SUCCESS_TAGS=()
 
 for target in "${TARGETS[@]}"; do
@@ -192,7 +201,7 @@ for target in "${TARGETS[@]}"; do
       done
     fi
   }
-  trap cleanup_run EXIT
+  trap cleanup_run EXIT INT TERM HUP
 
   log_exec "mkdir -p $MNT_DIR $ROOTFS_DIR"
   mkdir -p "$MNT_DIR" "$ROOTFS_DIR"
