@@ -14,7 +14,7 @@ set -euo pipefail
 #   -h, --help                                Show this help message
 # ==============================================================================
 
-IMAGE_NAME="${IMAGE_NAME:-runalsh/redos-patch}"
+IMAGE_NAME="${IMAGE_NAME:-runalsh/redos-iso-patch}"
 RELEASES_FILE="${RELEASES_FILE:-releases.txt}"
 PRESET_CHOICE="minimal"
 SKIP_EXISTS_CHECK="${SKIP_EXISTS_CHECK:-false}"
