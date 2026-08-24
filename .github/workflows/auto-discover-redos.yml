@@ -1,0 +1,44 @@
+name: Auto Discover New RED OS ISO Releases
+
+on:
+  schedule:
+    - cron: '0 3 * * 0' # Every Sunday at 03:00 UTC
+  workflow_dispatch:
+
+jobs:
+  discover:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Scan RED OS mirrors for new ISO releases
+        run: python3 discover_new_releases.py
+
+      - name: Create Pull Request if new release discovered
+        if: env.NEW_RELEASE_FOUND == 'true'
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: "feat: auto-discovered new RED OS release ${{ env.NEW_TAG }}"
+          title: "🚀 New RED OS Release Discovered: ${{ env.NEW_TAG }}"
+          body: |
+            Automated release discovery detected a new official RED OS ISO release: **${{ env.NEW_TAG }}**.
+
+            - **Version Tag**: `${{ env.NEW_TAG }}`
+            - **ISO URL**: `${{ env.NEW_URL }}`
+
+            `releases.txt` has been updated with the new ISO URL.
+            
+            Please review and merge this PR to trigger automated container build and publishing to Docker Hub and GHCR.
+          branch: "auto-discover-${{ env.NEW_TAG }}"
+          reviewers: "${{ github.repository_owner }}"
