@@ -135,10 +135,10 @@ echo -e "${C_BOLD}==============================================================
 
 global_cleanup() {
   log_info "Running pre-build cleanup of any leftover mounts and temporary files..."
-  for m in $(mount 2>/dev/null | grep -E '/tmp/iso_mnt_' | awk '{print $3}' || true); do
+  for m in $(mount 2>/dev/null | grep -E '/tmp/redos-iso-patch_iso_mnt_' | awk '{print $3}' || true); do
     s umount "$m" 2>/dev/null || true
   done
-  s rm -rf /tmp/iso_mnt_* /tmp/redos_rootfs_* /tmp/download_*.iso 2>/dev/null || true
+  s rm -rf /tmp/redos-iso-patch_iso_mnt_* /tmp/redos-iso-patch_rootfs_* /tmp/redos-iso-patch_download_*.iso 2>/dev/null || true
 }
 global_cleanup
 
@@ -182,8 +182,8 @@ for target in "${TARGETS[@]}"; do
 
   RAND_ID=$(head /dev/urandom | tr -dc a-z0-9 | head -c 8 ; echo '')
   LOCAL_ISO=""
-  MNT_DIR="/tmp/iso_mnt_${RAND_ID}"
-  ROOTFS_DIR="/tmp/redos_rootfs_${RAND_ID}"
+  MNT_DIR="/tmp/redos-iso-patch_iso_mnt_${RAND_ID}"
+  ROOTFS_DIR="/tmp/redos-iso-patch_rootfs_${RAND_ID}"
 
   cleanup_run() {
     log_info "Cleaning up temporary mount points and rootfs directory..."
@@ -215,7 +215,7 @@ for target in "${TARGETS[@]}"; do
       LOCAL_ISO="./$fname"
       log_info "Found local cached ISO: $LOCAL_ISO (download skipped)"
     else
-      LOCAL_ISO="/tmp/download_${RAND_ID}.iso"
+      LOCAL_ISO="/tmp/redos-iso-patch_download_${RAND_ID}.iso"
       log_info "Downloading ISO from ${source} (silent in CI)..."
       log_exec "curl -fLC - -sS --show-error -o $LOCAL_ISO $source"
       curl -fLC - -sS --show-error -o "$LOCAL_ISO" "$source"
