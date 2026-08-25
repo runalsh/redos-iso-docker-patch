@@ -444,3 +444,8 @@ for t in "${SUCCESS_TAGS[@]}"; do
   echo -e "  - ${C_BOLD}${t}${C_RESET}"
 done
 echo -e "${C_BOLD}==============================================================================${C_RESET}"
+
+if [ "${CLEANUP_DOCKER_IMAGES:-true}" = "true" ]; then
+    log_info "Performing final Docker cleanup of all redos-iso-patch images..."
+    docker images --format '{{.Repository}}:{{.Tag}}' | grep -E '^((ghcr\.io/)?runalsh/redos-iso-patch)(:|$)' | xargs -r docker rmi -f 2>/dev/null || true
+fi

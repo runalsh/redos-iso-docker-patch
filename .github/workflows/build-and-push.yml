@@ -94,8 +94,9 @@ jobs:
           PRESET="${{ github.event.inputs.preset || 'minimal' }}"
           ./build.sh --preset "$PRESET"
 
-      - name: Always Clean Up Leftover Mounts and Files
+      - name: Always Clean Up Leftover Mounts, Files and Docker Images
         if: always()
         run: |
           sudo umount /tmp/redos-iso-patch_iso_mnt_* 2>/dev/null || true
           sudo rm -rf /tmp/redos-iso-patch_* 2>/dev/null || true
+          docker images --format '{{.Repository}}:{{.Tag}}' | grep -E '^((ghcr\.io/)?runalsh/redos-iso-patch)(:|$)' | xargs -r docker rmi -f 2>/dev/null || true
