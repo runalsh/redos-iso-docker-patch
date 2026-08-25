@@ -406,11 +406,13 @@ for target in "${TARGETS[@]}"; do
 
   if [ "$TEST_VERSION" = "true" ]; then
     log_step "Validating generated Docker image"
-    log_exec "docker run --rm ${FULL_IMAGE_TAG} cat /etc/redos-release"
-    TEST_REL=$(docker run --rm "${FULL_IMAGE_TAG}" cat /etc/redos-release 2>&1)
-    echo -e "${C_CYAN}------------------------------------------------------------${C_RESET}"
-    echo -e "${C_BOLD}/etc/redos-release:${C_RESET} ${C_YELLOW}${TEST_REL}${C_RESET}"
-    echo -e "${C_CYAN}------------------------------------------------------------${C_RESET}"
+    if TEST_REL=$(docker run --rm "${FULL_IMAGE_TAG}" cat /etc/redos-release 2>/dev/null); then
+      echo -e "${C_CYAN}------------------------------------------------------------${C_RESET}"
+      echo -e "${C_BOLD}/etc/redos-release:${C_RESET} ${C_YELLOW}${TEST_REL}${C_RESET}"
+      echo -e "${C_CYAN}------------------------------------------------------------${C_RESET}"
+    else
+      log_warn "Container could not be executed locally on this host (e.g. CPU architecture mismatch). Skipping validation and proceeding."
+    fi
   fi
 
   if [ "$PUSH_TO_DOCKERHUB" = "true" ]; then
