@@ -267,7 +267,6 @@ for target in "${TARGETS[@]}"; do
       --nogpgcheck \
       --disablerepo='*' \
       --repofrompath=iso,"$MNT_DIR" \
-      --setopt=install_weak_deps=False \
       --setopt=tsflags=nodocs \
       --releasever="${ACTUAL_MAJOR}" \
       -y group install "${TARGET_GROUP}"; then
@@ -278,7 +277,6 @@ for target in "${TARGETS[@]}"; do
           --nogpgcheck \
           --disablerepo='*' \
           --repofrompath=iso,"$MNT_DIR" \
-          --setopt=install_weak_deps=False \
           --setopt=tsflags=nodocs \
           --releasever="${ACTUAL_MAJOR}" \
           -y install @core @standard redos-release
